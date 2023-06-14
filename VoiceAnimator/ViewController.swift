@@ -13,16 +13,32 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
     var audioRecorder: AVAudioRecorder!
     var timer: Timer?
     var circles: [UIView] = []
+    
+    @IBOutlet weak var myButton: UIButton!
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Setup audio recorder
         setupAudioRecorder()
-        
+
         // Start updating
         timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updateAmplitude), userInfo: nil, repeats: true)
+
     }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // Ensure the button is not transparent and has a border
+        myButton.alpha = 1.0
+        myButton.layer.borderWidth = 2  // Set the border width
+        myButton.layer.borderColor = UIColor.white.cgColor  // Set the border color
+        myButton.layer.cornerRadius = 10  // Set the corner radius
+        myButton.backgroundColor = .black  // Set the interior color
+        myButton.setTitleColor(.cyan, for: .normal)  // Set the text color
+    }
+
     
     func setupAudioRecorder() {
         let session = AVAudioSession.sharedInstance()
@@ -43,6 +59,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         audioRecorder.record()
     }
     
+
     @objc func updateAmplitude() {
         audioRecorder.updateMeters()
         
@@ -65,7 +82,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
             circleView.layer.borderWidth = 3    // set the border width
             circleView.layer.borderColor = UIColor.red.cgColor  // set the border color
             circleView.layer.cornerRadius = size / 2
-            view.addSubview(circleView)
+            view.insertSubview(circleView, belowSubview: myButton)
             circles.append(circleView)
         }
         
