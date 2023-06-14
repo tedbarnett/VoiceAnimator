@@ -55,8 +55,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         let maxSize: CGFloat = 400.0
         let size = minSize + (maxSize - minSize) * CGFloat(linear)
         
-        // Create a new circle
-        let circleView = UIView(frame: CGRect(x: view.center.x - size/2, y: view.center.y - size/2, width: size, height: size))
+        // Create a new circle at the bottom 20% of the screen
+        let circleView = UIView(frame: CGRect(x: view.center.x - size/2, y: view.bounds.height * 0.8 - size/2, width: size, height: size))
         circleView.backgroundColor = .clear  // make the background clear
         circleView.layer.borderWidth = 3    // set the border width
         circleView.layer.borderColor = UIColor.red.cgColor  // set the border color
@@ -64,13 +64,15 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         view.addSubview(circleView)
         circles.append(circleView)
         
-        // Drift older circles upwards
+        // Drift older circles upwards and fade them out
         let driftSpeed: CGFloat = 1  // Change this to increase/decrease speed
+        let fadeSpeed: CGFloat = 0.01  // Change this to increase/decrease fade speed
         for circle in circles {
             circle.center.y -= driftSpeed
+            circle.alpha -= fadeSpeed
         }
         
-        // Optional: remove circles that have drifted off the screen
-        circles = circles.filter { $0.frame.intersects(view.frame) }
+        // Optional: remove circles that have drifted off the screen or become fully transparent
+        circles = circles.filter { $0.frame.intersects(view.frame) && $0.alpha > 0 }
     }
 }
