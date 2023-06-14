@@ -12,20 +12,10 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
     
     var audioRecorder: AVAudioRecorder!
     var timer: Timer?
-    var circleView: UIView!
+    var circles: [UIView] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Draw initial circle
-        let circleSize: CGFloat = 50.0
-        circleView = UIView(frame: CGRect(x: view.center.x - circleSize/2, y: view.center.y - circleSize/2, width: circleSize, height: circleSize))
-        circleView.backgroundColor = .clear  // make the background clear
-        circleView.layer.borderWidth = 3    // set the border width
-        circleView.layer.borderColor = UIColor.red.cgColor  // set the border color
-        circleView.layer.cornerRadius = circleSize / 2
-        view.addSubview(circleView)
-
         
         // Setup audio recorder
         setupAudioRecorder()
@@ -62,10 +52,25 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         
         // Update circle size
         let minSize: CGFloat = 50.0
-        let maxSize: CGFloat = 400.0  // Doubled the maximum size
+        let maxSize: CGFloat = 400.0
         let size = minSize + (maxSize - minSize) * CGFloat(linear)
-        circleView.frame = CGRect(x: view.center.x - size/2, y: view.center.y - size/2, width: size, height: size)
+        
+        // Create a new circle
+        let circleView = UIView(frame: CGRect(x: view.center.x - size/2, y: view.center.y - size/2, width: size, height: size))
+        circleView.backgroundColor = .clear  // make the background clear
+        circleView.layer.borderWidth = 3    // set the border width
+        circleView.layer.borderColor = UIColor.red.cgColor  // set the border color
         circleView.layer.cornerRadius = size / 2
+        view.addSubview(circleView)
+        circles.append(circleView)
+        
+        // Drift older circles upwards
+        let driftSpeed: CGFloat = 1  // Change this to increase/decrease speed
+        for circle in circles {
+            circle.center.y -= driftSpeed
+        }
+        
+        // Optional: remove circles that have drifted off the screen
+        circles = circles.filter { $0.frame.intersects(view.frame) }
     }
-
 }
