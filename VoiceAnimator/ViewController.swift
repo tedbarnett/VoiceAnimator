@@ -55,14 +55,19 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         let maxSize: CGFloat = 400.0
         let size = minSize + (maxSize - minSize) * CGFloat(linear)
         
-        // Create a new circle at the bottom 20% of the screen
-        let circleView = UIView(frame: CGRect(x: view.center.x - size/2, y: view.bounds.height * 0.8 - size/2, width: size, height: size))
-        circleView.backgroundColor = .clear  // make the background clear
-        circleView.layer.borderWidth = 3    // set the border width
-        circleView.layer.borderColor = UIColor.red.cgColor  // set the border color
-        circleView.layer.cornerRadius = size / 2
-        view.addSubview(circleView)
-        circles.append(circleView)
+        // Define the minimum sound threshold
+        let minSound: Float = 0.1  // Change this to increase/decrease the threshold
+        
+        // Create a new circle at the bottom 20% of the screen only if the volume is above minSound
+        if linear > minSound {
+            let circleView = UIView(frame: CGRect(x: view.center.x - size/2, y: view.bounds.height * 0.8 - size/2, width: size, height: size))
+            circleView.backgroundColor = .clear  // make the background clear
+            circleView.layer.borderWidth = 3    // set the border width
+            circleView.layer.borderColor = UIColor.red.cgColor  // set the border color
+            circleView.layer.cornerRadius = size / 2
+            view.addSubview(circleView)
+            circles.append(circleView)
+        }
         
         // Drift older circles upwards and fade them out
         let driftSpeed: CGFloat = 1  // Change this to increase/decrease speed
@@ -76,3 +81,4 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         circles = circles.filter { $0.frame.intersects(view.frame) && $0.alpha > 0 }
     }
 }
+
