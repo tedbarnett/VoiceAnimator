@@ -62,39 +62,34 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
 
     @objc func updateAmplitude() {
         audioRecorder.updateMeters()
-        
+
         // Get average amplitude
         let decibels = audioRecorder.averagePower(forChannel: 0)
         let linear = pow(10.0, decibels / 20.0)
-        
-        // Update circle size
-        let minSize: CGFloat = 50.0
-        let maxSize: CGFloat = 400.0
-        let size = minSize + (maxSize - minSize) * CGFloat(linear)
-        
+
         // Define the minimum sound threshold
         let minSound: Float = 0.1  // Change this to increase/decrease the threshold
-        
-        // Create a new circle at the bottom 20% of the screen only if the volume is above minSound
+
+        // Create a new round rectangle at the bottom 20% of the screen only if the volume is above minSound
         if linear > minSound {
-            let circleView = UIView(frame: CGRect(x: view.center.x - size/2, y: view.bounds.height * 0.8 - size/2, width: size, height: size))
-            circleView.backgroundColor = .clear  // make the background clear
-            circleView.layer.borderWidth = 3    // set the border width
-            circleView.layer.borderColor = UIColor.red.cgColor  // set the border color
-            circleView.layer.cornerRadius = size / 2
-            view.insertSubview(circleView, belowSubview: myButton)
-            circles.append(circleView)
+            let rectView = UIView(frame: myButton.frame)
+            rectView.backgroundColor = .clear  // make the background clear
+            rectView.layer.borderWidth = 3    // set the border width
+            rectView.layer.borderColor = UIColor.red.cgColor  // set the border color
+            rectView.layer.cornerRadius = myButton.layer.cornerRadius
+            view.insertSubview(rectView, belowSubview: myButton)
+            circles.append(rectView)
         }
-        
-        // Drift older circles upwards and fade them out
+
+        // Drift older rectangles upwards and fade them out
         let driftSpeed: CGFloat = 1  // Change this to increase/decrease speed
         let fadeSpeed: CGFloat = 0.01  // Change this to increase/decrease fade speed
-        for circle in circles {
-            circle.center.y -= driftSpeed
-            circle.alpha -= fadeSpeed
+        for rect in circles {
+            rect.center.y -= driftSpeed
+            rect.alpha -= fadeSpeed
         }
-        
-        // Optional: remove circles that have drifted off the screen or become fully transparent
+
+        // Optional: remove rectangles that have drifted off the screen or become fully transparent
         circles = circles.filter { $0.frame.intersects(view.frame) && $0.alpha > 0 }
     }
 }
